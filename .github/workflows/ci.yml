@@ -18,7 +18,10 @@ jobs:
           echo "BB_VERSION=$(jq -r .bb toolchain.json)" >> "$GITHUB_OUTPUT"
 
       - name: Install toolchain
-        run: ./scripts/install-toolchain.sh
+        run: |
+          ./scripts/install-toolchain.sh
+          echo "$HOME/.nargo/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.bb" >> "$GITHUB_PATH"
 
       - name: Build circuit artifacts
         run: ./scripts/build.sh
@@ -26,6 +29,13 @@ jobs:
       - name: Run nargo tests
         working-directory: circuits/jwt_auth
         run: nargo test
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install smoke test deps
+        run: npm ci
 
       - name: Smoke test (prove + verify, native + bb.js, cross)
         run: ./scripts/smoke.sh
