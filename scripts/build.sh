@@ -60,6 +60,12 @@ for circuit in "${CIRCUITS[@]}"; do
 EOF
 
   echo "    artifacts/${circuit}/{circuit.json, vk, metadata.json}"
+
+  # Copy into Go package for embedding.
+  GO_ART="${REPO_ROOT}/packages/go/artifacts/${circuit}"
+  mkdir -p "${GO_ART}"
+  cp "${OUT_DIR}/circuit.json" "${OUT_DIR}/vk" "${OUT_DIR}/metadata.json" "${GO_ART}/"
+  echo "    packages/go/artifacts/${circuit}/ (updated)"
 done
 
 echo "done."

@@ -1,5 +1,7 @@
 # Build output (reproducible from source; never commit)
+# Exception: packages/go/artifacts/ is committed so the Go module is self-contained.
 artifacts/
+!packages/go/artifacts/
 
 # Noir
 circuits/**/target/
