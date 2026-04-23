@@ -1,0 +1,8 @@
+{
+  "$comment": "Single source of truth for zk toolchain versions. Everything in this repo derives from this file: the Dockerfile, install-toolchain.sh, and the version constants embedded in packages/ts and packages/go. Any change here is a minor (or major) release — downstream consumers must redeploy in lockstep. See docs/toolchain.md and docs/versioning.md.",
+  "nargo": "1.0.0-beta.15",
+  "bb": "3.0.0-nightly.20251104",
+  "bb_js": "3.0.0-nightly.20251104",
+  "noir_js": "1.0.0-beta.15",
+  "noir_jwt_rev": "v0.5.1"
+}

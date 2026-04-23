@@ -1,0 +1,4 @@
+# asdf / mise compatible. Values should match toolchain.json — scripts/install-toolchain.sh
+# is the canonical path; this file is a convenience for local dev with asdf/mise.
+nargo 1.0.0-beta.15
+bb 3.0.0-nightly.20251104

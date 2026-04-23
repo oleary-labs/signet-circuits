@@ -1,0 +1,27 @@
+# Build output (reproducible from source; never commit)
+artifacts/
+
+# Noir
+circuits/**/target/
+circuits/**/Nargo.lock.bak
+circuits/**/Prover.toml
+circuits/**/tests/fixture.json
+circuits/**/tests/circuit-inputs.json
+
+# Node
+node_modules/
+packages/ts/dist/
+packages/ts/src/artifacts/
+packages/ts/*.tgz
+.npm/
+
+# Go
+packages/go/bin/
+*.test
+*.out
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp

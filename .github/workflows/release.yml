@@ -1,0 +1,103 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Derive version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Install toolchain
+        run: ./scripts/install-toolchain.sh
+
+      - name: Build artifacts
+        run: ./scripts/build.sh
+
+      - name: Smoke
+        run: ./scripts/smoke.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: circuit-artifacts-${{ steps.version.outputs.version }}
+          path: artifacts/
+
+  docker:
+    runs-on: ubuntu-24.04
+    needs: build
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Read pinned toolchain versions
+        id: toolchain
+        run: |
+          echo "NARGO=$(jq -r .nargo toolchain.json)" >> "$GITHUB_OUTPUT"
+          echo "BB=$(jq -r .bb toolchain.json)" >> "$GITHUB_OUTPUT"
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/signet-circuits-toolchain:${{ needs.build.outputs.version }}
+          build-args: |
+            NARGO_VERSION=${{ steps.toolchain.outputs.NARGO }}
+            BB_VERSION=${{ steps.toolchain.outputs.BB }}
+
+  npm-publish:
+    runs-on: ubuntu-24.04
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: "https://registry.npmjs.org"
+      - uses: actions/download-artifact@v4
+        with:
+          name: circuit-artifacts-${{ needs.build.outputs.version }}
+          path: artifacts/
+      - name: Set package version from tag
+        working-directory: packages/ts
+        run: npm version "${{ needs.build.outputs.version }}" --no-git-tag-version
+      - run: npm ci
+        working-directory: packages/ts
+      - run: npm run build
+        working-directory: packages/ts
+      - run: npm publish
+        working-directory: packages/ts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  go-tag:
+    runs-on: ubuntu-24.04
+    needs: build
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Tag Go module path
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          MODULE_TAG="packages/go/v${{ needs.build.outputs.version }}"
+          git tag "${MODULE_TAG}"
+          git push origin "${MODULE_TAG}"

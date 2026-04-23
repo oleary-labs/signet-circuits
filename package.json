@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "description": "Root package for smoke test dependencies. Not published.",
+  "type": "module",
+  "dependencies": {
+    "@aztec/bb.js": "3.0.0-nightly.20251104",
+    "@noir-lang/noir_js": "1.0.0-beta.15"
+  }
+}

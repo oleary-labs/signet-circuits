@@ -1,0 +1,86 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-smoke:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read pinned toolchain versions
+        id: toolchain
+        run: |
+          echo "NARGO_VERSION=$(jq -r .nargo toolchain.json)" >> "$GITHUB_OUTPUT"
+          echo "BB_VERSION=$(jq -r .bb toolchain.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Install toolchain
+        run: ./scripts/install-toolchain.sh
+
+      - name: Build circuit artifacts
+        run: ./scripts/build.sh
+
+      - name: Run nargo tests
+        working-directory: circuits/jwt_auth
+        run: nargo test
+
+      - name: Smoke test (prove + verify, native + bb.js, cross)
+        run: ./scripts/smoke.sh
+
+      - name: zkbench
+        run: |
+          if [ -f zkbench/run.sh ]; then
+            ./zkbench/run.sh
+          else
+            echo "zkbench not yet migrated; skipping"
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: circuit-artifacts-${{ github.sha }}
+          path: artifacts/
+          retention-days: 14
+
+  ts-package:
+    runs-on: ubuntu-24.04
+    needs: build-and-smoke
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: circuit-artifacts-${{ github.sha }}
+          path: artifacts/
+      - run: npm ci
+        working-directory: packages/ts
+      - run: npm run build
+        working-directory: packages/ts
+      - run: npm pack --dry-run
+        working-directory: packages/ts
+
+  go-package:
+    runs-on: ubuntu-24.04
+    needs: build-and-smoke
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - uses: actions/download-artifact@v4
+        with:
+          name: circuit-artifacts-${{ github.sha }}
+          path: artifacts/
+      - name: Copy artifacts into Go module
+        run: |
+          mkdir -p packages/go/artifacts
+          cp -r artifacts/jwt_auth packages/go/artifacts/
+      - run: go build ./...
+        working-directory: packages/go
+      - run: go vet ./...
+        working-directory: packages/go
