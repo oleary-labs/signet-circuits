@@ -29,7 +29,7 @@ ENV PATH="/root/.nargo/bin:${PATH}"
 RUN noirup -v "${NARGO_VERSION}"
 
 # Install bbup (installs a pinned bb version)
-RUN curl -L https://raw.githubusercontent.com/AztecProtocol/aztec-packages/main/barretenberg/cpp/installation/install | bash
+RUN curl -L https://raw.githubusercontent.com/AztecProtocol/aztec-packages/refs/heads/next/barretenberg/bbup/install | bash
 ENV PATH="/root/.bb:${PATH}"
 RUN bbup -v "${BB_VERSION}"
 

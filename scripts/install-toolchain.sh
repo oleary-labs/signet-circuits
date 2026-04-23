@@ -26,7 +26,7 @@ noirup -v "${NARGO_VERSION}"
 
 echo "Installing bb ${BB_VERSION} via bbup..."
 if ! command -v bbup >/dev/null; then
-  curl -L https://raw.githubusercontent.com/AztecProtocol/aztec-packages/main/barretenberg/cpp/installation/install | bash
+  curl -L https://raw.githubusercontent.com/AztecProtocol/aztec-packages/refs/heads/next/barretenberg/bbup/install | bash
   export PATH="${HOME}/.bb:${PATH}"
 fi
 bbup -v "${BB_VERSION}"

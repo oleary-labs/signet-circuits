@@ -1,1 +1,2 @@
 - [Toolchain compat](toolchain_compat.md) — beta.15 is current known-good; beta.20 blocked by noir-jwt transitive deps using removed u1 type
+- [Protocol integration](protocol_integration.md) — VK embedded via Go module; bb CLI still used for verify
