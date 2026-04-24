@@ -1,0 +1,10 @@
+[package]
+name = "jwt_auth"
+type = "bin"
+authors = ["Signet"]
+compiler_version = ">=1.0.0"
+
+# noir-jwt pinned by commit/tag, NOT branch. Bumps happen here explicitly.
+# The pinned rev should match toolchain.json#noir_jwt_rev — CI asserts this.
+[dependencies]
+jwt = { git = "https://github.com/zkemail/noir-jwt", tag = "v0.5.1" }

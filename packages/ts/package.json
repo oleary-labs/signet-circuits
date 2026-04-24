@@ -1,6 +1,6 @@
 {
-  "name": "@signet/circuits",
-  "version": "0.0.0",
+  "name": "@oleary-labs/signet-circuits",
+  "version": "0.1.0",
   "description": "Compiled Signet zk circuit artifacts (bytecode + verification key) and pinned toolchain version constants. Consumed by the UI.",
   "type": "module",
   "main": "./dist/index.js",
@@ -36,6 +36,6 @@
   "license": "UNLICENSED",
   "private": false,
   "publishConfig": {
-    "access": "restricted"
+    "access": "public"
   }
 }

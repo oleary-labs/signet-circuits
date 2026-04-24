@@ -22,6 +22,18 @@ var JWTVK []byte
 //go:embed artifacts/jwt_auth/metadata.json
 var jwtMetadataRaw []byte
 
+// JWTNargoToml is the Nargo.toml for the JWT circuit project.
+// Needed by the bundler to run nargo execute for witness generation.
+//
+//go:embed source/jwt_auth/Nargo.toml
+var JWTNargoToml []byte
+
+// JWTMainNr is the Noir source for the JWT circuit.
+// Needed by the bundler to run nargo execute for witness generation.
+//
+//go:embed source/jwt_auth/src/main.nr
+var JWTMainNr []byte
+
 // Metadata is stamped at build time from artifacts/<circuit>/metadata.json.
 type Metadata struct {
 	Circuit     string    `json:"circuit"`

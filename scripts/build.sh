@@ -65,7 +65,13 @@ EOF
   GO_ART="${REPO_ROOT}/packages/go/artifacts/${circuit}"
   mkdir -p "${GO_ART}"
   cp "${OUT_DIR}/circuit.json" "${OUT_DIR}/vk" "${OUT_DIR}/metadata.json" "${GO_ART}/"
-  echo "    packages/go/artifacts/${circuit}/ (updated)"
+
+  # Copy circuit source files for bundler witness generation (nargo execute).
+  GO_SRC="${REPO_ROOT}/packages/go/source/${circuit}"
+  mkdir -p "${GO_SRC}/src"
+  cp "${SRC_DIR}/Nargo.toml" "${GO_SRC}/"
+  cp "${SRC_DIR}/src/main.nr" "${GO_SRC}/src/"
+  echo "    packages/go/{artifacts,source}/${circuit}/ (updated)"
 done
 
 echo "done."
