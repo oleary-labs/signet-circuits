@@ -1,7 +1,7 @@
 {
   "circuit": "jwt_auth",
-  "git_sha": "unknown",
-  "circuit_hash": "215937e5f79791301a661800dad33e909ac0ada80067e5fb3ff341c251c77d56",
+  "git_sha": "9dfe129cd62e4490e2a74c289b65396a33aa417b",
+  "circuit_hash": "5e2276ec713a974d220348170c6ca93b27a292aee96fa3303881a54154bdda6e",
   "toolchain": {
   "$comment": "Single source of truth for zk toolchain versions. Everything in this repo derives from this file: the Dockerfile, install-toolchain.sh, and the version constants embedded in packages/ts and packages/go. Any change here is a minor (or major) release — downstream consumers must redeploy in lockstep. See docs/toolchain.md and docs/versioning.md.",
   "nargo": "1.0.0-beta.15",

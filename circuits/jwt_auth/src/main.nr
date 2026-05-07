@@ -39,12 +39,19 @@ fn main(
     );
     jwt_token.verify();
 
-    // 2. Assert JWT claims match the public inputs
+    // 2. Assert JWT claims match the public inputs.
+    //    Claims with non-empty expected values must appear in the JWT.
+    //    Empty expected values are skipped -- the node sees an empty public
+    //    input and knows the claim was not checked.
     jwt_token.assert_claim_string("iss".as_bytes(), expected_iss);
     jwt_token.assert_claim_string("sub".as_bytes(), expected_sub);
     jwt_token.assert_claim_number("exp".as_bytes(), expected_exp);
-    jwt_token.assert_claim_string("aud".as_bytes(), expected_aud);
-    jwt_token.assert_claim_string("azp".as_bytes(), expected_azp);
+    if expected_aud.len() > 0 {
+        jwt_token.assert_claim_string("aud".as_bytes(), expected_aud);
+    }
+    if expected_azp.len() > 0 {
+        jwt_token.assert_claim_string("azp".as_bytes(), expected_azp);
+    }
 
     // 3. session_pub is bound to the proof as a public input.
     //    A proof generated with session_pub=P1 will not verify against P2.
